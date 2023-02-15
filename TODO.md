@@ -1,11 +1,5 @@
 # TODO
 
-- [  ] **feature** Add 2D primitives to the `Geometry API`
-
-- [  ] **feature** Add sampling to the `Geometry API`: both `sample_interior` and `sample_boundary` to mimic the functionality of the `modulus.Geometry` class
-
-- [  ] **doc** Add an `Geometry API` doc
-
 - [  ] **doc** Add an `Inference API` doc `inference.md`
 
 - [  ] Fix problems with CFD problem set -- ask Natliia from SoftServe to do it and to contribute their OpenFoam solution as well

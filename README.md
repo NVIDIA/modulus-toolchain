@@ -73,10 +73,6 @@ The [`Problem API`](mtc/templates/docs/problem.md) is also documented.
 
 # Release Notes
 
-**RC2302(dev)**
-
-1. Added support for 2D geometries in `mtc compile --target geometry`. Supported primitives: `Circle`, `Rectangle`, `Channel2D`, `Polygon`
-
 **v23.01**
 
 1. Added the `Sphere` and `Cylinder` geometry primitives in 3D.

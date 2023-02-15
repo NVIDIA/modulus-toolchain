@@ -82,8 +82,8 @@ def enforce(equation=None, on_domain=None):
     return {"equation": equation, "on_domain": on_domain}
 
 
-class PINNProblem:
-    def __init__(self, name="PINN problem", cfg=None):
+class Problem:
+    def __init__(self, name="problem", cfg=None):
 
         self._problem_name = name
         self._vars = {}  # str -> sympy.Symbol
@@ -200,17 +200,6 @@ class PINNProblem:
             "normal_z": 1,
         }  # self._geom.sample_boundary(1)
         return {v: Symbol(v) for v in d.keys()}
-
-    def GeometryCustomWarp(self, name, code_str, func, param_list, params=None):
-        self._custom_warp_code = code_str
-        assert name not in self._geom
-        self._geom[name] = {
-            "type": "GeometryCustomWarp",
-            "args": param_list,
-            "func": func,
-            "params": params,
-        }
-        return name
 
     def Rectangle(self, name, a, b, params=None, rotate=None):
         assert name not in self._geom
@@ -1753,9 +1742,6 @@ info = {
         print("-" * 80, "\n")
 
     def pprint(self):
-        print("------------")
-        print("PINN Problem")
-        print("------------")
         print()
         self.pprint_nns()
         self.pprint_models()

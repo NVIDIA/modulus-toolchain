@@ -8,20 +8,8 @@ def load_template(filename):
 
 
 def compile(problem):
-    assert (
-        "x" in problem._vars and "y" in problem._vars
-    ), "Problem geometry must be 2D or 3D"
-    t_file = "warp_geometry_2d.py"
-    if "z" in problem._vars:
-        print("3D geometry detected")
-        t_file = "warp_geometry.py"
-
-    T = Template(load_template(os.path.join("templates", t_file)))
-
+    T = Template(load_template(os.path.join("templates", "warp_geometry.py")))
     data = {}
-    if "_custom_warp_code" in dir(problem):
-        data["custom_warp_code"] = problem._custom_warp_code
-
     data["geometries"] = [{"name": name, "g": g} for name, g in problem._geom.items()]
     params = {}
     for name, g in problem._geom.items():
