@@ -1,0 +1,88 @@
+
+group1:
+  type: group
+  label: Group1
+  default:
+    s:
+      type: str
+      label: String Variable
+      hint: hint
+      default: ""
+    fixed1:
+      type: fixed
+      default: some fixed value
+
+    float1:
+      type: float
+      label: Some Float
+      default: 1.0
+      hint: "[float] pi"
+    int1:
+      type: int
+      label: Some Int
+      default: 1
+      hint: "[int] not pi"
+
+    ngrp1:
+      type: group
+      default:
+        a:
+          type: int
+          default: 1
+        b:
+          type: float
+          default: 0.4
+
+        c:
+          type: bool
+          default: true
+
+    constraints:
+      type: group
+      label: Constraints
+      default:
+        include:
+          label: Include this constraint
+          type: bool
+          default: true
+        batch_size:
+          type: int
+          label: Batch Size
+          hint: The number of points used to compute 1 gradient
+          default: 512
+
+
+option1:
+  type: option
+  label: Now for some choices
+  default: choice1
+  choices:
+    choice1:
+      textarea1:
+        type: textarea
+        
+        default: ""
+
+      int2:
+        type: int
+        default: 3
+
+    choice2:
+      bool1:
+        type: bool
+        label: Boolean
+        default: true
+
+      nestedoption:
+        type: option
+        label: Nested Option
+        default: good
+        choices:
+          good:
+            message:
+              type: fixed
+              default: All done!
+          bad:
+            message:
+              type: textarea
+              default: More work...

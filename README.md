@@ -1,92 +1,120 @@
-# Modulus-Toolchain
+
+# Modulus Tool-Chain (MTC)
+
+[See [A Conceptual Framework for PINNs](mtc/templates/docs/tutorial/ch0-pinn-conceptual-framework.md) for a more detailed project motivation]
+
+The MTC suite of utilities aims to simplify work on Physics Informed Neural Networks and, eventually, Physics ML more broadly (it does not support neural operators currently). The goal is to provide sufficient support for the whole workflow in addition to a simplified API. More specifically
+
+- Project management facilities
+    - Creation, cloning / replicating / extending projects
+    - Introspection and analysis
+    - Training process control (start/stop, multi-stage training, history clearing, multi-gpu/node)
+    - Using the trained models easily (Inference)
+    - Simplified configuration initialization and validation (e.g. a Configurator GUI)
+
+- Simplified API that clearly separates problem definition (`problem.py`) from training (solving the problem) and inference (using the solution)
+
+At a high level, the toolchain is intended to work as the following diagram shows:
+![c](mtc/templates/docs/compiler-toolchain.svg)
+
+# Features
+
+1. Basic 1D, 2D, 3D geometry and CSG operations and mesh geometry from STL files [[tutorial](mtc/templates/docs/tutorial/ch2-sample-subdomains.md)]
+1. Sub domain creation with ability to parameterize PDEs [[tutorial](mtc/templates/docs/tutorial/ch1-hello-world.md)]
+1. Pointwise constraints implemented in `Problem` API [[docs](mtc/templates/docs/problem.md)]
+1. Automatic initialization of default configuration specific to problem
+1. Compile targets: `training`, `inference`, `sampler`, `train-sampled`
+1. Automatic rewriting of problem to equivalent formulation but only using first derivatives of neural networks ([tutorial](mtc/templates/docs/tutorial/ch6-semantic-analysis.md))
+1. Configuration UI allows: detailed configuration and quick multi-stage training (e.g., transfer learning) [[tutorial](mtc/templates/docs/tutorial/ch5-multi-stage-training.md)]
+1. Multi-gpu training; e.g., `mtc train --ngpus 2`
 
 
+# Installation
 
-## Getting started
+Uses Modulus 22.07
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+For example, you may load a container and mount the root dir of this repo. Here is one way (run in the top level of this repo)
 
 ```
-cd existing_repo
-git remote add origin https://gitlab-master.nvidia.com/modulus/modulus-toolchain.git
-git branch -M main
-git push -uf origin main
+sudo docker run --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 -v `pwd`/:/tests -p 8888:8888 -it --rm nvcr.io/nvidia/modulus/modulus:22.07
+```
+The port forwarding is to enable a Jupyter lab server--the recommended way to interact with MTC. 
+
+## Setup
+If running inside a Modulus container for the first time
+```
+cd mpc
+sh set-up-mtc-lab.sh
 ```
 
-## Integrate with your tools
+Set up your environment by running (in the top-level dir of this repo)
+```bash
+source set-up-env.sh
+```
+Then the Modulus Tool Chain becomes available. Run `mtc --help` for a list of commands, and `mtc [command] --help` for help on a specific command. 
 
-- [ ] [Set up project integrations](https://gitlab-master.nvidia.com/modulus/modulus-toolchain/-/settings/integrations)
+Start the Jupyter Lab environment at the root of the repo with
+```
+mtc-lab --no-browser --NotebookApp.token='' --notebook-dir=/ --NotebookApp.allow_origin='*'
+```
+or simply
+```
+mtc-lab
+```
 
-## Collaborate with your team
+# Using the toolchain
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+A [tutorial](mtc/templates/docs/tutorial/index.md) is available inside the environment (see setup above). 
+1. Create a new project with `mtc create myproject` -- this creates and populates a directory called `myproject`
+1. Inside the Jupyter Lab environment, navigate to  `myproject/docs/tutorial` and right-click on `index.md` to select "Open With"/"Markdown Preview"
 
-## Test and Deploy
+The [`Problem API`](mtc/templates/docs/problem.md) is also documented.
 
-Use the built-in continuous integration in GitLab.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+# Release Notes
 
-***
+**RC2302(dev)**
 
-# Editing this README
+1. Added support for 2D geometries in `mtc compile --target geometry`. Supported primitives: `Circle`, `Rectangle`, `Channel2D`, `Polygon`
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+**v23.01**
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+1. Added the `Sphere` and `Cylinder` geometry primitives in 3D.
+2. Added a 3D stress concentration example with parameterized radius.
+3. Added `mtc compile --target geometry` that outputs a `geometry.py` module implementing Warp-based constructive solid geometry meshes for each of the geometric primitives in `problem.py` (only 3D: Box, Sphere, and Cylinder supported)
+4. Added versioning information (e.g., `mtc version`)
 
-## Name
-Choose a self-explaining name for your project.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+**v22.12**
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+1. Added expanded `examples/` subdirectory including three sets of practice problems.
+2. Improved parameterization: geometry parameterization now supported
+3. Added support multi-gpu training; e.g., `mtc train --ngpus 2`
+4. Added `CustomGeometry` type (see [`Problem API`](mtc/templates/docs/problem.md)) and a Warp-based airfoil geometry [example](examples/03-Airfoil/index.md)
+5. Wrote Chapter 5 to tutorial on multi-stage training (thanks Guillaume!)
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+**v22.11**
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+1. Added support for `compute_sdf_derivatives` in interior subdomains. Zero Equation example from Modulus docs works.
+1. Added support for STL mesh geometries (in 3D)
+1. Added `--max-steps` option to `mtc init-conf`
+1. Initial `--constraint-opt` implementation grouping constraints to improve sampling efficiency (can lead to 3x speedups during training)
+1. Added `params=` option to geometry primitives to allow geometric parameterization
+1. Added initial support integral constraints (just add `sympy.Integral` in equation's left-hand side): see [`Problem API`](mtc/templates/docs/problem.md)
+1. Added `Polygon`, `Line2D`, `Channel2D` to the 2D base geometries, `Box` to 3D geometries, and a `rotation` option for each of the 2D/3D geometries (`Polygon`, `Rectangle`, `Line2D`, `Channel2D`, `Box` )
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+**v22.10**
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+1. First release (beta)
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+# End User License Agreement (EULA)
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Refer to the included Energy SDK License Agreement in [Energy_SDK_License_Agreement.pdf](Energy_SDK_License_Agreement.pdf) for guidance.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+# References
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+[1] Modulus Documentation: https://docs.nvidia.com/deeplearning/modulus/index.html
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+[2] Modulus container image from ngc.nvidia.com: https://catalog.ngc.nvidia.com/orgs/nvidia/teams/modulus/containers/modulus
 
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+**Pavel Dimitrov** pdimitrov@nvidia.com

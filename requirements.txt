@@ -1,0 +1,5 @@
+wheel
+ipyvuetify
+matplotlib
+ipympl
+voila

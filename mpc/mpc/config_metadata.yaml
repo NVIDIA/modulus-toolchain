@@ -1,0 +1,12 @@
+metadata:
+  type: group
+  default:
+    project-name:
+      type: str
+      label: Project Name
+      default: ""
+
+    project-description:
+      type: textarea
+      label: Project Description
+      default: ""

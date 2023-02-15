@@ -1,0 +1,1 @@
+time docker build -t mtc:`cat MTC_VERSION` .
