@@ -1,0 +1,14 @@
+
+.venv
+venv/
+venv-mtc-lab
+test_dir
+outputs/
+# vscode workspaces
+.vscode/
+.ipynb_checkpoints
+
+training
+
+__pycache__
+.pytest_cache
