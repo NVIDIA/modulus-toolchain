@@ -1,0 +1,1 @@
+python -m markdown -x fenced_code markdown/problem.md > static/index.html

@@ -1,0 +1,218 @@
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+training:
+  type: group
+  label: Training
+  default:
+    amp: 
+      type: bool
+      default: false
+    amp_dtype: 
+      type: str
+      default: float16
+    grad_agg_freq: 
+      type: int
+      default: 1
+    max_steps: 
+      type: int
+      default: 18100
+    ntk:
+      type: group
+      default:
+        run_freq: 
+          type: int
+          default: 1000
+        save_name: 
+          type: str
+          default: null
+        use_ntk: 
+          type: bool
+          default: false
+    print_stats_freq: 
+      type: int
+      default: 100
+    rec_constraint_freq: 
+      type: int
+      default: 2000
+    rec_inference_freq: 
+      type: fixed
+      default: ${training.rec_results_freq}
+    rec_monitor_freq: 
+      type: fixed
+      default: ${training.rec_results_freq}
+    rec_results_freq: 
+      type: int
+      default: 1500
+    rec_validation_freq: 
+      type: fixed
+      default: ${training.rec_results_freq}
+    save_network_freq: 
+      type: int
+      default: 1000
+    summary_freq: 
+      type: int
+      default: 1000
+
+arch:
+  type: option
+  label: NN Architecture
+  default: fully_connected
+  choices:
+    fully_connected:
+      _target_: 
+        type: fixed
+        default: modulus.models.fully_connected.FullyConnectedArch
+      adaptive_activations: 
+        type: bool
+        default: false
+      layer_size:
+        type: int 
+        default: 512
+      nr_layers: 
+        type: int
+        default: 6
+      skip_connections: 
+        type: bool
+        default: false
+      weight_norm: 
+        type: bool
+        default: true
+
+    fourier_net:
+      _target_: 
+        type: fixed
+        default: modulus.models.fourier_net.FourierNetArch
+      nr_layers:
+        type: int
+        default: 6
+      skip_connections: 
+        type: bool
+        default: false
+      weight_norm: 
+        type: bool
+        default: true
+      adaptive_activations: 
+        type: bool
+        default: false
+      frequencies:
+        type: string_tuple
+        default: ('axis', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+      frequencies_params:
+        type: string_tuple
+        default: ('axis', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+scheduler:
+  type: option
+  label: Scheduler
+  default: standard
+  choices:
+    standard:
+      _name_: 
+        type: str
+        default: tf.ExponentialLR      
+      _target_: 
+        type: str
+        default: custom
+      decay_rate: 
+        label: Decay Rate
+        type: float
+        default: 0.95
+      decay_steps:
+        label: Decay Steps 
+        type: int
+        default: 200   
+
+optimizer:
+  type: option
+  label: Optimizer
+  default: adam
+  choices:
+    adam:
+      _params_:
+        type: group
+        label: Parameters (?)
+        default:
+          apply_gradients: 
+            type: str
+            default: adam_apply_gradients
+          compute_gradients: 
+            type: str
+            default: adam_compute_gradients
+      _target_: 
+        type: fixed
+        default: torch.optim.Adam
+      amsgrad: 
+        type: bool
+        label: "AMS grad (?)"
+        default: false
+      betas:
+        type: list
+        hint: "[list] Two of these... e.g., [0.9, 0.999]"
+        default:
+        - 0.9
+        - 0.999
+      eps: 
+        type: float
+        hint: "[float] Threshold below which..."
+        default: 1.0e-08
+      lr: 
+        type: float
+        label: Learning Rate
+        hint: "[float] the alpha"
+        default: 0.001
+      weight_decay: 
+        type: float
+        label: Weight Decay
+        hint: "[float] What is this?"
+        default: 0.0  
+    lbfgs:
+      _params_:
+        type: group
+        label: Parameters (?)
+        default:
+          apply_gradients: 
+            type: str
+            default: adam_apply_gradients
+          compute_gradients: 
+            type: str
+            default: adam_compute_gradients
+      _target_: 
+        type: fixed
+        default: not.this.torch.optim.Adam
+      amsgrad: 
+        type: bool
+        label: "AMS grad (?)"
+        default: false
+      betas:
+        type: list
+        hint: "[list] Two of these... e.g., [0.9, 0.999]"
+        default:
+        - 0.9
+        - 0.999
+      eps: 
+        type: float
+        hint: "[float] Threshold below which..."
+        default: 1.0e-08
+      lr: 
+        type: float
+        label: Learning Rate
+        hint: "[float] the alpha"
+        default: 0.001
+      weight_decay: 
+        type: float
+        label: Weight Decay
+        hint: "[float] What is this?"
+        default: 0.0  
+

@@ -1,0 +1,85 @@
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+hydra:
+  run:
+    dir: outputs
+training:
+  max_steps: 18100
+  grad_agg_freq: 1
+  rec_results_freq: 1500
+  rec_validation_freq: ${training.rec_results_freq}
+  rec_inference_freq: ${training.rec_results_freq}
+  rec_monitor_freq: ${training.rec_results_freq}
+  rec_constraint_freq: 2000
+  save_network_freq: 1000
+  print_stats_freq: 100
+  summary_freq: 1000
+  amp: false
+  amp_dtype: float16
+  ntk:
+    use_ntk: false
+    save_name: null
+    run_freq: 1000
+profiler:
+  profile: false
+  start_step: 0
+  end_step: 100
+  name: nvtx
+network_dir: "."
+initialization_network_dir: ''
+save_filetypes: np
+summary_histograms: false
+jit: true
+jit_use_nvfuser: false
+cuda_graphs: true
+cuda_graph_warmup: 20
+find_unused_parameters: false
+broadcast_buffers: false
+device: ''
+debug: false
+run_mode: train
+arch:
+  fully_connected:
+    _target_: modulus.models.fully_connected.FullyConnectedArch
+    layer_size: 512
+    nr_layers: 6
+    skip_connections: false
+    adaptive_activations: false
+    weight_norm: true
+loss:
+  _target_: modulus.loss.aggregator.Sum
+  weights:
+    u: 1.0
+    diffusion_u: 1.0
+optimizer:
+  _params_:
+    compute_gradients: adam_compute_gradients
+    apply_gradients: adam_apply_gradients
+  _target_: torch.optim.Adam
+  lr: 0.001
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1.0e-08
+  weight_decay: 0.0
+  amsgrad: false
+scheduler:
+  _target_: custom
+  _name_: tf.ExponentialLR
+  decay_rate: 0.95
+  decay_steps: 200
+batch_size:
+  wall: 1000
+  interior: 1000

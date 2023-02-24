@@ -1,0 +1,1 @@
+MPC_PROJECT_PATH=$1 $MPC_PATH/venv/bin/voila $MPC_PATH/app-notebook.ipynb  --no-browser --Voila.ip=0.0.0.0 --port=$2 --VoilaConfiguration.file_whitelist="['.*']"

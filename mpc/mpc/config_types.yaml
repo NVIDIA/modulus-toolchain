@@ -1,0 +1,104 @@
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+arch:
+  fully_connected:
+    _target_: modulus.models.fully_connected.FullyConnectedArch
+    adaptive_activations: 
+      type: bool
+      default: false
+    layer_size:
+      type: int 
+      default: 512
+    nr_layers: 
+      type: int
+      default: 6
+    skip_connections: 
+      type: bool
+      default: false
+    weight_norm: 
+      type: bool
+      default: true
+
+  fourier_net:
+    _target_: modulus.models.fourier_net.FourierNetArch
+    nr_layers:
+      type: int
+      default: 6
+    skip_connections: 
+      type: bool
+      default: false
+    weight_norm: 
+      type: bool
+      default: true
+    adaptive_activations: 
+      type: bool
+      default: false
+    frequencies:
+      type: string_tuple
+      default: ('axis', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    frequencies_params:
+      type: string_tuple
+      default: ('axis', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+scheduler:
+  default:
+    _name_: 
+      type: str
+      default: tf.ExponentialLR      
+    _target_: 
+      type: str
+      default: custom
+    decay_rate: 
+      label: Decay Rate
+      type: float
+      default: 0.95
+    decay_steps:
+      label: Decay Steps 
+      type: int
+      default: 200      
+optimizer:
+  adam:
+    _params_:
+      apply_gradients: 
+        type: str
+        default: adam_apply_gradients
+      compute_gradients: 
+        type: str
+        default: adam_compute_gradients
+    _target_: torch.optim.Adam
+    amsgrad: 
+      type: bool
+      label: "AMS grad (?)"
+      default: false
+    betas:
+      type: list
+      hint: "[list] Two of these... e.g., [0.9, 0.999]"
+      default:
+      - 0.9
+      - 0.999
+    eps: 
+      type: float
+      hint: "[float] Threshold below which..."
+      default: 1.0e-08
+    lr: 
+      type: float
+      label: Learning Rate
+      hint: "[float] the alpha"
+      default: 0.001
+    weight_decay: 
+      type: float
+      label: Weight Decay
+      hint: "[float] What is this?"
+      default: 0.0  

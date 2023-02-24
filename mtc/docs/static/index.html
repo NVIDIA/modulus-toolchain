@@ -1,0 +1,105 @@
+<h1>Elements of a <code>problem.py</code></h1>
+<p>A problem is defined using the <code>p</code> object imported from the <code>cfg.py</code> local module. The object
+    provides facilities to:</p>
+<ol>
+    <li>Define models with "adjustable functions" -- the neural networks</li>
+    <li>Define the domain geometries</li>
+    <li>Build sub-domains using the various geometries</li>
+    <li>Define sub-models that can be used to both define constraints and for inference. (the main goal for solving the
+        problem)</li>
+    <li>Define equation-based constraints (using the sub-models)</li>
+    <li>Define data-based constraints</li>
+    <li>Define "collection models" which select from the sub-models based on a boolean expression of the inputs.</li>
+</ol>
+<h2>Neural Network Declaration / Variables</h2>
+<p>Problem variables as well as "adjustable functions" are defined by declaring neural networks. </p>
+<p>The adjustable functions <code>u_metal</code> and <code>u_air</code> below are defined by declaring two neural
+    networks in the example below.</p>
+<pre><code>[x, y, a, b, Q, airT], [u_metal] = p.add_neural_network(
+    name=&quot;metalNN&quot;,
+    inputs=[&quot;x&quot;, &quot;y&quot;, &quot;a&quot;, &quot;b&quot;, &quot;Q&quot;, &quot;airT&quot;],
+    outputs=[&quot;u_metal&quot;],
+)
+
+[x, y, a, b, Q, airT], [u_air] = p.add_neural_network(
+    name=&quot;airNN&quot;,
+    inputs=[&quot;x&quot;, &quot;y&quot;, &quot;a&quot;, &quot;b&quot;, &quot;Q&quot;, &quot;airT&quot;],
+    outputs=[&quot;u_air&quot;],
+)
+</code></pre>
+<p>And this can be accomplished with a single neural network like this:</p>
+<pre><code>[x, y, a, b, Q, airT], [u_air, u_metal] = p.add_neural_network(
+    name=&quot;air_metalNN&quot;,
+    nn_type=&quot;fully_connected&quot;,
+    inputs=[&quot;x&quot;, &quot;y&quot;, &quot;a&quot;, &quot;b&quot;, &quot;Q&quot;, &quot;airT&quot;],
+    outputs=[&quot;u_air&quot;, &quot;u_air&quot;],
+)
+</code></pre>
+<p>How one chooses to do this depends on the problem and the training plan defined at a later stage.</p>
+<h2>Sub-Models</h2>
+<p>Once the problem variables are defined as above, more complex models may be defined using the variables and the
+    adjustable functions (outputs of neural networks).
+    This is the general form </p>
+<pre><code>model = p.add_submodel(model_name: str, model: sympy.Expr)
+</code></pre>
+<p>Registering models in this way will make them available for inference later. The main reason is to provide a
+    <code>model_name</code> so we can refer to it later.</p>
+<p>For example, to ensure that boundary conditions are strictly enforced, we can define a sub-model <code>g_metal</code>
+    as follows:</p>
+<pre><code>zf = (x - x0) * (x - x1)
+vf = zf + a + (b - a) * (x - x0) / 2.0
+g_metal = p.add_submodel(&quot;g_metal&quot;, u_metal * zf + vf)
+</code></pre>
+<h2>Collection Models</h2>
+<p>A collection model is useful for combining the learned sub-models into the models that are ultimately needed. For
+    example, if <code>g()</code> is defined on part of the domain, and <code>h()</code> on the rest, then a collection
+    model allows to define a <code>f()</code> as </p>
+<pre><code>p.set_model(
+    name: str,
+    [
+        {&quot;func&quot;: &lt;submodel1&gt;, &quot;on&quot;: &lt;sympy.BoolExpr&gt;,
+        {&quot;func&quot;: &lt;submodel2&gt;, &quot;on&quot;:  &lt;sympy.BoolExpr&gt;,
+    ],
+)
+</code></pre>
+<p>for example</p>
+<pre><code>p.set_model(
+    &quot;f&quot;,
+    [
+        {&quot;func&quot;: g, &quot;on&quot;: And(y &gt; mny, y &lt; mxy)},
+        {&quot;func&quot;: h, &quot;on&quot;: ~And(y &gt; mny, y &lt; mxy)},
+    ],
+)
+</code></pre>
+<h2>Geometry &amp; Sub-Domains</h2>
+<h2>Constraints</h2>
+<h3>Equation Constraint</h3>
+<p>Equation constraints take the following form</p>
+<pre><code>p.set_constraints(
+    {
+        &quot;&lt;constraint-name&gt;&quot;: enforce(equation=&lt;sympy.Eq&gt;, on_domain=&lt;sub-domain&gt;), 
+
+        ...
+    }
+)
+</code></pre>
+<h3>Data Constraint</h3>
+<p>Data constraints are</p>
+<h1>Toolchain</h1>
+<p><img alt="c" src="compiler-toolchain.svg" /></p>
+<pre><code>$ mtc
+Usage: python -m mtc.mtc [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  compile           Compile problem into a train.py script or an infer.py
+  configurator      Start the Modulus Project Configurator server
+  create            Create new Modulus project
+  docs              Modulus Simplified API Docs Server
+  fix-conf          Fix the config file if needed
+  inference-server  start an inference server
+  show              Show information info_type= problem | training
+  train             Train models
+</code></pre>
