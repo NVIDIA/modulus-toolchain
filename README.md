@@ -66,11 +66,11 @@ conda activate mtcenv
 
 # Using the toolchain
 
-A [tutorial](mtc/templates/docs/tutorial/index.md) is available inside the environment (see setup above). 
+A PINN [tutorial](mtc/templates/docs/PINNs/tutorial/index.md) is available inside the environment (see setup above). 
 1. Create a new project with `mtc create myproject` -- this creates and populates a directory called `myproject`
 1. Inside the Jupyter Lab environment, navigate to  `myproject/docs/tutorial` and right-click on `index.md` to select "Open With"/"Markdown Preview"
 
-The [`Problem API`](mtc/templates/docs//PINNs/problem.md) is also documented.
+The [`PINN Problem API`](mtc/templates/docs//PINNs/problem.md) and the [`PINO Problem API`](mtc/templates/docs/NOs/problem.md) are also documented.
 
 
 # Release Notes
