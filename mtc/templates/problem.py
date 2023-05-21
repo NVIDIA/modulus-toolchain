@@ -1,20 +1,12 @@
-# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 from cfg import *
 
-# Suggested structure
+# Select Problem Type
+p = PINN
+# p = FNO # uncomment to select a PINO/FNO problem type
+# -------------------
+
+
+# Suggested structure (PINN)
 #
 # 1. Define problem variables and unknown functions; e.g.,
 #    [x, y], [u] = p.add_neural_network(name="NN", inputs=["x", "y"], outputs=["u"])
@@ -51,3 +43,27 @@ from cfg import *
 #         {"func": g_air, "on": ~And(y > mny, y < mxy)},
 #     ],
 # )
+
+# Suggested structure (FNO)
+#
+# 1. Define the discrete spatial domain (the extent, the grid, and grid spacing)
+#    x, y, dx, dy = p.set_grid_domain(N=100, extent={"x": (0.0, 1.0), "y": (0.0, 1.0)})
+#
+#    Note that the spatial variables are defined in this way (x and y are sympy.Symbol) and the
+#    grid spacing is now computed based on the number of grid points N and returned for each variable.
+#
+# 2. Define problem input and output functions; e.g.,
+#    [K, ],[X,Y],  [U] = p.add_neural_network(name="NN", inputs=["K"], outputs=["U"])
+#
+# 3. If a data driven FNO, add input/output distribution
+#     ddata = p.add_distribution(name="Ddata", {"K": Kvals, "U": Uvals})
+#
+# 4. If PINO, an input distribution may be sufficient (i.e. with no output values)
+#     dinput = p.add_distribution(name="Dinputs", {"K": Kvals})
+#
+# 5. If data-driven, add a data constraint
+#     p.add_data_constraint("data", over=ddata) # input is a distribution that has input/output entries
+#
+# 6. If PINO, add an interior and boundary equation constraint (interior/boundary grid points)
+#     p.add_interior_constraint("heat eq", equation=Eq(U.diff(x,x)+U.diff(y, y), 1), over=dinput)
+#     p.add_boundary_constraint("bdry", equation=Eq(U=0), over=dinput)
