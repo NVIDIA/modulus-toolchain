@@ -1,7 +1,7 @@
 
 # Modulus Tool-Chain (MTC) [Beta]
 
-[See [A Conceptual Framework for PINNs](mtc/templates/docs/tutorial/ch0-pinn-conceptual-framework.md) for a more detailed project motivation]
+[See [A Conceptual Framework for PINNs](mtc/templates/docs/PINNs/tutorial/ch0-pinn-conceptual-framework.md) for a more detailed project motivation]
 
 The MTC suite of utilities aims to simplify work on Physics Informed Neural Networks and, eventually, Physics ML more broadly (it does not support neural operators currently). The goal is to provide sufficient support for the whole workflow in addition to a simplified API. More specifically
 
@@ -20,12 +20,12 @@ At a high level, the toolchain is intended to work as the following diagram show
 # Features
 
 1. Basic 1D, 2D, 3D geometry and CSG operations and mesh geometry from STL files [[tutorial](mtc/templates/docs/tutorial/ch2-sample-subdomains.md)]
-1. Sub domain creation with ability to parameterize PDEs [[tutorial](mtc/templates/docs/tutorial/ch1-hello-world.md)]
+1. Sub domain creation with ability to parameterize PDEs [[tutorial](mtc/templates/docs/PINNs/tutorial/ch1-hello-world.md)]
 1. Pointwise constraints implemented in `Problem` API [[docs](mtc/templates/docs/problem.md)]
 1. Automatic initialization of default configuration specific to problem
 1. Compile targets: `training`, `inference`, `sampler`, `train-sampled`
-1. Automatic rewriting of problem to equivalent formulation but only using first derivatives of neural networks ([tutorial](mtc/templates/docs/tutorial/ch6-semantic-analysis.md))
-1. Configuration UI allows: detailed configuration and quick multi-stage training (e.g., transfer learning) [[tutorial](mtc/templates/docs/tutorial/ch5-multi-stage-training.md)]
+1. Automatic rewriting of problem to equivalent formulation but only using first derivatives of neural networks ([tutorial](mtc/templates/docs/PINNs/tutorial/ch6-semantic-analysis.md))
+1. Configuration UI allows: detailed configuration and quick multi-stage training (e.g., transfer learning) [[tutorial](mtc/templates/docs/PINNs/tutorial/ch5-multi-stage-training.md)]
 1. Multi-gpu training; e.g., `mtc train --ngpus 2`
 1. Limited support for FNO/PINO models
 
@@ -70,7 +70,7 @@ A [tutorial](mtc/templates/docs/tutorial/index.md) is available inside the envir
 1. Create a new project with `mtc create myproject` -- this creates and populates a directory called `myproject`
 1. Inside the Jupyter Lab environment, navigate to  `myproject/docs/tutorial` and right-click on `index.md` to select "Open With"/"Markdown Preview"
 
-The [`Problem API`](mtc/templates/docs/problem.md) is also documented.
+The [`Problem API`](mtc/templates/docs//PINNs/problem.md) is also documented.
 
 
 # Release Notes
