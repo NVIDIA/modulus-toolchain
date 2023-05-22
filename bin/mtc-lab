@@ -1,1 +1,0 @@
-$MPC_PATH/venv-mtc-lab/bin/jupyter lab --ip="*" --allow-root $@
