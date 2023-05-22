@@ -1,5 +1,7 @@
 {
     "apps": [
-        "mpc"
+        "mpc",
+        "demoYAMLv1",
+        "demoYAMLv2"
     ]
 }

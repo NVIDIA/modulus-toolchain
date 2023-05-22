@@ -1,3 +1,17 @@
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from sympy import Symbol, Function, Or, And, Eq, Abs, Integral, expand
 import sympy
 
@@ -82,8 +96,8 @@ def enforce(equation=None, on_domain=None):
     return {"equation": equation, "on_domain": on_domain}
 
 
-class PINNProblem:
-    def __init__(self, name="PINN problem", cfg=None):
+class Problem:
+    def __init__(self, name="problem", cfg=None):
 
         self._problem_name = name
         self._vars = {}  # str -> sympy.Symbol
@@ -200,17 +214,6 @@ class PINNProblem:
             "normal_z": 1,
         }  # self._geom.sample_boundary(1)
         return {v: Symbol(v) for v in d.keys()}
-
-    def GeometryCustomWarp(self, name, code_str, func, param_list, params=None):
-        self._custom_warp_code = code_str
-        assert name not in self._geom
-        self._geom[name] = {
-            "type": "GeometryCustomWarp",
-            "args": param_list,
-            "func": func,
-            "params": params,
-        }
-        return name
 
     def Rectangle(self, name, a, b, params=None, rotate=None):
         assert name not in self._geom
@@ -552,10 +555,7 @@ class PINNProblem:
                 # End HACK
 
                 sl += [f"from {g['module_name']} import {g['class_name']}"]
-                print(g["args"])
-
-                args = "(" + ",".join(list(g["args"])) + ")"
-                sl += [f"{gname} = {g['class_name']}{args}"]
+                sl += [f"{gname} = {g['class_name']}{g['args']}"]
 
                 continue
 
@@ -568,8 +568,7 @@ class PINNProblem:
             elif g["type"] == "STL":
                 fname, airtight = g["args"]
                 sl += [
-                    "from modulus.sym.geometry.tessellation import Tessellation",
-                    f"{gname}=Tessellation.from_stl('{fname}', airtight={airtight}) ",
+                    f"{gname}=Tessellation.from_stl('{fname}', airtight={airtight}) "
                 ]
             else:  # CSG like Line1D, Circle, Box, etc.
                 rotate_str = ""
@@ -578,7 +577,7 @@ class PINNProblem:
 
                     if "params" in g and g["params"] is not None:
                         sl += [
-                            "from modulus.sym.geometry.parameterization import Parameterization, Parameter"
+                            "from modulus.geometry.parameterization import Parameterization, Parameter"
                         ]
 
                         # pstr = "Parameterization({"
@@ -591,7 +590,7 @@ class PINNProblem:
 
                 if "params" in g and g["params"] is not None:
                     sl += [
-                        "from modulus.sym.geometry.parameterization import Parameterization"
+                        "from modulus.geometry.parameterization import Parameterization"
                     ]
                     pstr = f"Parameterization({g['params']})"
                     args = (
@@ -1096,7 +1095,7 @@ domain.add_constraint(pic, '{cname}')
                 fname = f"samples/{domain}.hdf5"
                 s = f"""
 import h5py
-from modulus.sym.geometry.parameterization import Parameterization, Parameter
+from modulus.geometry.parameterization import Parameterization, Parameter
 subdomain = {geom}
 samples = subdomain.sample_interior({nr}, criteria={criteria}, compute_sdf_derivatives={sd["compute_sdf_derivatives"]}{parameterization})
 with h5py.File("{fname}", "w") as f:
@@ -1137,7 +1136,7 @@ print(f'wrote {fname}')
                 # fname = f"samples/{cname}.hdf5"
                 s = f"""
 import h5py
-from modulus.sym.geometry.parameterization import Parameterization, Parameter
+from modulus.geometry.parameterization import Parameterization, Parameter
 subdomain = {geom}
 t0=time.time()
 samples = subdomain.sample_boundary({nr}, criteria={criteria}{parameterization})
@@ -1160,9 +1159,6 @@ print(f'wrote {fname}')
     def compile_data_constraints(self):
         sl = ["", "# " + "-" * 40, "# Data Constraints", ""]
         for cname, v in self._data_constraints.items():
-            data_cstr = self._conf["modulus_project"]["training"]["stages"][
-                self._stage_id
-            ]["data"]["dconstraint"]
             invars = ",".join([f"'{v}': f['{v}']" for v in self._vars])
             invars = "{" + invars + "}"
             s = f"""
@@ -1171,7 +1167,7 @@ with h5py.File("{v['data_fname']}", 'r') as f:
     pbc = PointwiseConstraint.from_numpy(
             nodes=nodes,
             invar={invars},
-            batch_size=int(np.min([f['x'].shape[0], {data_cstr['batch_size']}])),
+            batch_size=int(np.min([f['x'].shape[0], 512])),
             outvar={{'{v['outvar']}':f["{v['outvar']}"]}},
     )
     domain.add_constraint(pbc, '{v["data_fname"]}')
@@ -1495,7 +1491,7 @@ info = {
         self.domain.add_inferencer(inferencer)
         # create inference function
         def infer_fn(*args, **kargs):
-            from modulus.sym.domain.constraint import Constraint
+            from modulus.domain.constraint import Constraint
 
             invals = {str(v): kargs[v].reshape(-1, 1) for v in self._vars.keys()}
 
@@ -1760,9 +1756,6 @@ info = {
         print("-" * 80, "\n")
 
     def pprint(self):
-        print("------------")
-        print("PINN Problem")
-        print("------------")
         print()
         self.pprint_nns()
         self.pprint_models()

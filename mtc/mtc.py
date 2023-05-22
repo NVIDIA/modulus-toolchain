@@ -1,3 +1,17 @@
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import click
 import os, sys
 
@@ -25,9 +39,6 @@ def create(project_name):
         os.makedirs(os.path.join(newdir, "conf"))
         src = os.path.join(basedir, "templates", "conf", "config.yaml")
         dst = os.path.join(newdir, "conf", "config.yaml")
-        shutil.copyfile(src, dst)
-        src = os.path.join(basedir, "templates", "conf", "config_PINO.yaml")
-        dst = os.path.join(newdir, "conf", "config_PINO.yaml")
         shutil.copyfile(src, dst)
         src = os.path.join(basedir, "templates", "conf", "__init__.py")
         dst = os.path.join(newdir, "conf", "__init__.py")
@@ -320,33 +331,33 @@ def init_conf(only_first_order_ufunc, max_steps):
     )
 
 
-# @cli.command()
-# @click.option("--port", default=7777, help="default=7777")
-# def configurator(port):
-#     """Start the Modulus Project Configurator server"""
-#     os.system(f"sh $MPC_PATH/start-app.sh `pwd` {port}")
+@cli.command()
+@click.option("--port", default=7777, help="default=7777")
+def configurator(port):
+    """Start the Modulus Project Configurator server"""
+    os.system(f"sh $MPC_PATH/start-app.sh `pwd` {port}")
 
 
-# @cli.command()
-# @click.option(
-#     "--stage",
-#     default="stage1",
-#     help="Use a stage ID (like 'stage1') to target a specific stage",
-# )
-# @click.option("--port", default=7777, help="default=7777")
-# @click.option(
-#     "--compile/--no-compile",
-#     default=True,
-#     help="problem.py is compiled into infer.py by default, use this to avoid compilation",
-# )
-# def inference_server(stage, port, compile):
-#     "start an inference server"
+@cli.command()
+@click.option(
+    "--stage",
+    default="stage1",
+    help="Use a stage ID (like 'stage1') to target a specific stage",
+)
+@click.option("--port", default=7777, help="default=7777")
+@click.option(
+    "--compile/--no-compile",
+    default=True,
+    help="problem.py is compiled into infer.py by default, use this to avoid compilation",
+)
+def inference_server(stage, port, compile):
+    "start an inference server"
 
-#     if compile:
-#         os.system(f"mtc compile --target inference --stage {stage}")
+    if compile:
+        os.system(f"mtc compile --target inference --stage {stage}")
 
-#     # start server
-#     os.system(f"cd training/{stage}; python -m mpc.rest_server.start {stage}")
+    # start server
+    os.system(f"cd training/{stage}; python -m mpc.rest_server.start {stage}")
 
 
 @cli.command()

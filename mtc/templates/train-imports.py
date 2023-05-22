@@ -1,31 +1,45 @@
-from modulus.sym.solver import Solver
-from modulus.sym.domain import Domain
-from modulus.sym.geometry.primitives_1d import Line1D, Point1D
-from modulus.sym.geometry.primitives_2d import Rectangle, Circle, Polygon, Line, Channel2D
-from modulus.sym.geometry.primitives_3d import Box, Sphere, Cylinder
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-from modulus.sym.domain.constraint import (
+from modulus.solver import Solver
+from modulus.domain import Domain
+from modulus.geometry.primitives_1d import Line1D, Point1D
+from modulus.geometry.primitives_2d import Rectangle, Circle, Polygon, Line, Channel2D
+from modulus.geometry.primitives_3d import Box, Sphere, Cylinder
+
+from modulus.domain.constraint import (
     PointwiseBoundaryConstraint,
     PointwiseInteriorConstraint,
     PointwiseConstraint,
     IntegralBoundaryConstraint
 )
 
-from modulus.sym.domain.inferencer import PointwiseInferencer
+from modulus.domain.inferencer import PointwiseInferencer
 
-from modulus.sym.geometry.parameterization import Parameterization, Parameter
+from modulus.geometry.parameterization import Parameterization, Parameter
 
-from modulus.sym.key import Key
-from modulus.sym.node import Node
+from modulus.key import Key
+from modulus.node import Node
 
 import modulus
-from modulus.sym.hydra import to_absolute_path, to_yaml, instantiate_arch
-from modulus.sym.hydra.config import ModulusConfig
+from modulus.hydra import to_absolute_path, to_yaml, instantiate_arch
+from modulus.hydra.config import ModulusConfig
 
 import numpy as np
 import os
 
-# from modulus.sym.geometry.tessellation import Tessellation
+from modulus.geometry.tessellation import Tessellation
 ###############
 from sympy import Symbol, Eq, Or, And, Function
 import sympy
@@ -67,11 +81,11 @@ class PDParam:
         return d
 
 {% if no_modulus_main %}
-from modulus.sym.hydra.utils import compose
+from modulus.hydra.utils import compose
 cfg = compose(config_path="conf", config_name="config")
 cfg.network_dir = "{{conf_path}}/outputs"
 def run(cfg=cfg) -> None:
 {% else %}
-@modulus.sym.main(config_path="conf", config_name="config")
+@modulus.main(config_path="conf", config_name="config")
 def run(cfg) -> None:
 {% endif %}
