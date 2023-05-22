@@ -1,5 +1,13 @@
+#git+https://github.com/NVIDIA/modulus-sym.git@main
+
+nvidia-modulus.sym
 wheel
+click
+notebook
+jupyterlab
+tensorboard
+pandas
+graphviz
 ipyvuetify
 matplotlib
 ipympl
-voila
