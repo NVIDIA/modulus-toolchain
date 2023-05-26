@@ -1,13 +1,9 @@
-# Contribute to NVIDIA Modulus
-
 ## Introduction
-![NVIDIA Modulus Overview](/Modulus_overview.png)
 
-NVIDIA Modulus is a neural network training and inference platform that blends the power of physics in the form of governing partial differential equations (PDEs) with data to build high-fidelity, parameterized surrogate models with near-real-time latency. 
-With NVIDIA Modulus, we aim to provide researchers and industry specialists, various tools that will help accelerate your development of such models for the scientific discipline of your need. 
+Welcome to Project Modulus! We're excited you're here and want to contribute. This documentation is intended for individuals and institutions interested in contributing to Modulus. Modulus is an open-source project and, as such, its success relies on its community of contributors willing to keep improving it. Your contribution will be a valued addition to the code base; we simply ask that you read this page and understand our contribution process, whether you are a seasoned open-source contributor or whether you are a first-time contributor.
 
-Modulus User Guide comes in with several reference examples to help you jumpstart your development of AI driven models. 
-The purpose of this document is to briefly describe the architecture of the Modulus so that partners can extend the Modulus platform by applying Modulus to build AI models for other application areas and domains of scientific computation.
+### Communicate with us
+We are happy to talk with you about your needs for Modulus and your ideas for contributing to the project. One way to do this is to create an issue discussing your thoughts. It might be that a very similar feature is under development or already exists, so an issue is a great starting point. If you are looking for an issue to resolve that will help, refer to the [issue](https://github.com/NVIDIA/modulus/issues) section.
 
 ## Architecture
 
@@ -28,49 +24,78 @@ Inside are various submodules that contain larger features of Modulus including:
 
 Please refer to the [user guide](https://docs.nvidia.com/deeplearning/modulus/user_guide/getting_started/toc.html) for additional information.
 
-## License
 
-The NVIDIA Modulus and its components are licensed under the [Modulus EULA license](/LICENSE.txt).
+## Contribute to Modulus-Toolchain
 
-## Artifacts
+### Pull Requests
+Developer workflow for code contributions is as follows:
 
-NVIDIA Modulus has the following artifacts as part of the product release:
-- Source Code
-- Container Images
-- Examples
+1. Developers must first [fork](https://help.github.com/en/articles/fork-a-repo) the [upstream](https://github.com/NVIDIA/Modulus) Modulus repository.
 
-Releases of Modulus include container images that are currently available on [NVIDIA NGC Catalog](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/modulus/containers/modulus).
-The following are the container images (and tag format) that are released:
-├── nvidia/
-│   ├── xx
- 
-## Contributions
-NVIDIA is willing to work with partners for extending and adding functionality to the Modulus platform. Modulus and its components are licensed under the [Modulus EULA license](/LICENSE.txt).
+2. Git clone the forked repository and push changes to the personal fork.
 
-To get started developing with the Modulus code base we suggest mounting it as a volume inside the current docker container.
-E.g. for version `22.09` we suggest the following:
+3. Once the code changes are staged on the fork and ready for review, a [Pull Request](https://help.github.com/en/articles/about-pull-requests) (PR) can be [requested](https://help.github.com/en/articles/creating-a-pull-request) to merge the changes from a branch of the fork into a selected branch of upstream.
+  * Exercise caution when selecting the source and target branches for the PR.
+  * Creation of a PR creation kicks off CI and a code review process.
+  * Atleast one Modulus engineer will be assigned for the review.
 
-```shell
-$ mkdir modulus_dev && cd modulus_dev
-$ git clone https://gitlab.com/nvidia/Modulus/Modulus.git
-$ docker run --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 \
-           --runtime nvidia -v ${PWD}:/examples/ -it modulus:22.09 bash
-$ cd modulus
-$ python setup.py develop
-$ cd ..
+4. The PR will be accepted and the corresponding issue closed after adequate review and testing has been completed.
+
+### Licensing information
+All source code files should start with this paragraph:
 ```
-Now anything developed inside of the Modulus source `modulus_dev/modulus` and working folder `modulus_dev` can be ran inside the docker container.
-
- 
-### Signing your work
-Want to hack on NVIDIA Modulus? Awesome! We only require you to sign your work, the below section describes this!
-The sign-off is a simple line at the end of the explanation for the patch. Your signature certifies that you wrote the patch or otherwise have the right to pass it on as a patch in accordance with the Modulus EULA (Link). 
- 
-Then you just add a line to every git commit message:
+# Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 ```
-Signed-off-by: Joe Smith <joe.smith@email.com>
-```
+### Signing Your Work
 
-Use your real name (sorry, no pseudonyms or anonymous contributions.)
-If you set your user.name and user.email git configs, you can sign your commit automatically with git commit -s.
+* We require that all contributors "sign-off" on their commits. This certifies that the contribution is your original work, or you have rights to submit it under the same license, or a compatible license.
 
+  * Any contribution which contains commits that are not Signed-Off will not be accepted.
+
+* To sign off on a commit you simply use the `--signoff` (or `-s`) option when committing your changes:
+  ```bash
+  $ git commit -s -m "Add cool feature."
+  ```
+  This will append the following to your commit message:
+  ```
+  Signed-off-by: Your Name <your@email.com>
+  ```
+
+* Full text of the DCO:
+
+  ```
+    Developer Certificate of Origin
+    Version 1.1
+    
+    Copyright (C) 2004, 2006 The Linux Foundation and its contributors.
+    1 Letterman Drive
+    Suite D4700
+    San Francisco, CA, 94129
+    
+    Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+  ```
+
+  ```
+    Developer's Certificate of Origin 1.1
+    
+    By making a contribution to this project, I certify that:
+    
+    (a) The contribution was created in whole or in part by me and I have the right to submit it under the open source license indicated in the file; or
+    
+    (b) The contribution is based upon previous work that, to the best of my knowledge, is covered under an appropriate open source license and I have the right under that license to submit that work with modifications, whether created in whole or in part by me, under the same open source license (unless I am permitted to submit under a different license), as indicated in the file; or
+    
+    (c) The contribution was provided directly to me by some other person who certified (a), (b) or (c) and I have not modified it.
+    
+    (d) I understand and agree that this project and the contribution are public and that a record of the contribution (including all personal information I submit with it, including my sign-off) is maintained indefinitely and may be redistributed consistent with this project or the open source license(s) involved.
